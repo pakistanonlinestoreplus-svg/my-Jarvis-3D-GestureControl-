@@ -371,7 +371,54 @@
             themeColor: '#00ffff'
         };
 
-        const originalMaterials = new Map(); // Store original materials
+        const originalMaterials = new Map();// Store original materials
+        /* ===== AIR DRAWING SYSTEM ===== */
+
+let drawingPoints = [];
+let isDrawing = false;
+
+const drawCanvas = document.createElement("canvas");
+drawCanvas.width = window.innerWidth;
+drawCanvas.height = window.innerHeight;
+drawCanvas.style.position = "absolute";
+drawCanvas.style.top = "0";
+drawCanvas.style.left = "0";
+drawCanvas.style.pointerEvents = "none";
+drawCanvas.style.zIndex = "5";
+
+document.body.appendChild(drawCanvas);
+
+const drawCtx = drawCanvas.getContext("2d");
+
+function drawAirLine(){
+
+    drawCtx.clearRect(0,0,drawCanvas.width,drawCanvas.height);
+
+    if(drawingPoints.length < 2) return;
+
+    drawCtx.beginPath();
+
+    drawingPoints.forEach((p,i)=>{
+
+        if(i===0){
+            drawCtx.moveTo(p.x,p.y);
+        }else{
+            drawCtx.lineTo(p.x,p.y);
+        }
+
+    });
+
+    drawCtx.strokeStyle = state.themeColor;
+    drawCtx.lineWidth = 4;
+    drawCtx.stroke();
+}
+
+const originalMaterials = new Map(); // Store original materials
+
+// --- UI Element Binding ---
+const statusDot = document.getElementById('system-status-dot');
+const statusText = document.getElementById('system-status-text');
+const gestureLabel = document.getElementById('gesture-label');
 
         // --- UI Element Binding ---
         const statusDot = document.getElementById('system-status-dot');
