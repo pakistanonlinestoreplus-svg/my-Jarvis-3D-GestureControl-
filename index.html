@@ -371,54 +371,7 @@
             themeColor: '#00ffff'
         };
 
-        const originalMaterials = new Map();// Store original materials
-        /* ===== AIR DRAWING SYSTEM ===== */
-
-let drawingPoints = [];
-let isDrawing = false;
-
-const drawCanvas = document.createElement("canvas");
-drawCanvas.width = window.innerWidth;
-drawCanvas.height = window.innerHeight;
-drawCanvas.style.position = "absolute";
-drawCanvas.style.top = "0";
-drawCanvas.style.left = "0";
-drawCanvas.style.pointerEvents = "none";
-drawCanvas.style.zIndex = "5";
-
-document.body.appendChild(drawCanvas);
-
-const drawCtx = drawCanvas.getContext("2d");
-
-function drawAirLine(){
-
-    drawCtx.clearRect(0,0,drawCanvas.width,drawCanvas.height);
-
-    if(drawingPoints.length < 2) return;
-
-    drawCtx.beginPath();
-
-    drawingPoints.forEach((p,i)=>{
-
-        if(i===0){
-            drawCtx.moveTo(p.x,p.y);
-        }else{
-            drawCtx.lineTo(p.x,p.y);
-        }
-
-    });
-
-    drawCtx.strokeStyle = state.themeColor;
-    drawCtx.lineWidth = 4;
-    drawCtx.stroke();
-}
-
-const originalMaterials = new Map(); // Store original materials
-
-// --- UI Element Binding ---
-const statusDot = document.getElementById('system-status-dot');
-const statusText = document.getElementById('system-status-text');
-const gestureLabel = document.getElementById('gesture-label');
+        const originalMaterials = new Map(); // Store original materials
 
         // --- UI Element Binding ---
         const statusDot = document.getElementById('system-status-dot');
@@ -774,39 +727,7 @@ const gestureLabel = document.getElementById('gesture-label');
             canvasCtx.restore();
 
             const hands = results.multiHandLandmarks;
-/* ===== AIR DRAWING LOGIC ===== */
 
-if(hands && hands.length === 1){
-
-    const hand = hands[0];
-    const indexTip = hand[8];
-    const thumbTip = hand[4];
-
-    const x = (1 - indexTip.x) * window.innerWidth;
-    const y = indexTip.y * window.innerHeight;
-
-    const pinchDistance = Math.hypot(
-        indexTip.x - thumbTip.x,
-        indexTip.y - thumbTip.y
-    );
-
-    if(pinchDistance < 0.04){
-
-        isDrawing = true;
-        drawingPoints.push({x,y});
-        drawAirLine();
-
-    }else{
-
-        if(isDrawing){
-            finishDrawing();
-        }
-
-        isDrawing = false;
-
-    }
-
-}
             state.activeGestures = [];
             let pinchCount = 0;
             let pinchingHands = [];
@@ -917,38 +838,6 @@ if(hands && hands.length === 1){
         }
 
         function handleRotation(landmarks) {
-            function finishDrawing(){
-
-    if(drawingPoints.length < 20){
-        drawingPoints = [];
-        drawCtx.clearRect(0,0,drawCanvas.width,drawCanvas.height);
-        return;
-    }
-
-    const geometry = new THREE.SphereGeometry(0.5,32,32);
-
-    const material = new THREE.MeshStandardMaterial({
-        color: state.themeColor,
-        emissive: state.themeColor,
-        emissiveIntensity: 0.4,
-        metalness:0.7,
-        roughness:0.2
-    });
-
-    const mesh = new THREE.Mesh(geometry,material);
-
-    mesh.position.set(
-        (Math.random()-0.5)*4,
-        (Math.random()-0.5)*4,
-        (Math.random()-0.5)*4
-    );
-
-    scene.add(mesh);
-
-    drawingPoints = [];
-    drawCtx.clearRect(0,0,drawCanvas.width,drawCanvas.height);
-
-}
             // New "Trackball" / Delta Rotation Logic
             // 1. Get current hand position (Wrist)
             const wrist = landmarks[0];
